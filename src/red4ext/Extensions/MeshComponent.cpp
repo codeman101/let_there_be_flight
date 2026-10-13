@@ -1,5 +1,8 @@
 #include "MeshComponent.hpp"
-#include <PhysX3.hpp>
+#ifndef __APPLE__
+#include <PhysX3.hpp> // LTBF R41: not used in this file
+#endif
+#include "Utils/PlatformLayout.hpp"
 #include <RED4ext/Scripting/Natives/Generated/ent/HardTransformBinding.hpp>
 #include <RED4ext/Scripting/Natives/Generated/ent/SlotComponent.hpp>
 #include <RED4ext/Scripting/Natives/Generated/ent/VisualControllerComponent.hpp>
@@ -48,17 +51,17 @@ void EntityExt::AddComponent(Handle<ent::IComponent> const & componentToAdd) {
       vcd->mesh.path = meshComponent->mesh.path;
       vcc->appearanceDependency.EmplaceBack(*vcd);
 
-      if (vcc->resourcePaths.size) {
-        for (int i = 0; i < vcc->resourcePaths.size; i++) {
-          if (vcc->resourcePaths[i] == meshComponent->mesh.path) {
+      if (LTBF_VCC_RESOURCE_PATHS(vcc).size) {
+        for (int i = 0; i < LTBF_VCC_RESOURCE_PATHS(vcc).size; i++) {
+          if (LTBF_VCC_RESOURCE_PATHS(vcc)[i] == meshComponent->mesh.path) {
             break;
-          } else if (vcc->resourcePaths[i] > meshComponent->mesh.path) {
-            vcc->resourcePaths.Emplace(&vcc->resourcePaths[i], meshComponent->mesh.path);
+          } else if (LTBF_VCC_RESOURCE_PATHS(vcc)[i] > meshComponent->mesh.path) {
+            LTBF_VCC_RESOURCE_PATHS(vcc).Emplace(&LTBF_VCC_RESOURCE_PATHS(vcc)[i], meshComponent->mesh.path);
             break;
           }
         }
       } else {
-        vcc->resourcePaths.EmplaceBack(meshComponent->mesh.path);
+        LTBF_VCC_RESOURCE_PATHS(vcc).EmplaceBack(meshComponent->mesh.path);
       }
     }
 
@@ -110,7 +113,11 @@ void EntityExt::AddComponent(Handle<ent::IComponent> const & componentToAdd) {
     auto filterData = rtti->GetClass("physicsFilterData")->CreateInstance<physics::FilterData *>(true);
 
     pmComponent->filterData = Handle<physics::FilterData>(filterData);
+#ifdef __APPLE__
+    pmComponent->filterDataSource = physics::FilterDataSource::Collider;
+#else
     pmComponent->filterDataSource = FilterDataSource::Collider;
+#endif
   }
 
   // if (this->IsOfClass(rtti->GetClass("vehicleBaseObject"))) {
@@ -156,7 +163,7 @@ void EntityExt::AddSlot(CName boneName, CName slotName, Vector3 relativePosition
     slot->relativePosition = relativePosition;
     slot->relativeRotation = relativeRotation;
     slotComponent->slots.EmplaceBack(*slot);
-    slotComponent->slotIndexLookup.Emplace(slot->slotName, slotComponent->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(slotComponent).Emplace(slot->slotName, slotComponent->slots.size - 1);
   }
 }
 
