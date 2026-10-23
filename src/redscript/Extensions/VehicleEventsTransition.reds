@@ -1,7 +1,11 @@
 @replaceMethod(VehicleEventsTransition)
-protected final func HandleCameraInput(scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  if scriptInterface.IsActionJustPressed(n"ToggleVehCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) && !FlightController.GetInstance().active {
+protected final func HandleCameraInput(const stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+  // 2.5: the game's body (toggle on release, cinematic camera on hold), with LTBF's rule that no camera change happens while flying.
+  if scriptInterface.IsActionJustReleased(n"ToggleVehCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) && !FlightController.GetInstance().active {
     this.RequestToggleVehicleCamera(scriptInterface);
+  };
+  if scriptInterface.IsActionJustHeld(n"HoldCinematicCamera") && !this.IsInItemWheelState(stateContext) && !this.IsVehicleCameraChangeBlocked(scriptInterface) && !FlightController.GetInstance().active {
+    this.RequestVehicleCinematicCamera(scriptInterface);
   };
 }
 
