@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <RED4ext/Common.hpp>
 #include <RED4ext/DynArray.hpp>
-#include <RED4ext/SharedMutex.hpp>
+#include <RED4ext/SharedSpinLock.hpp>
 #include <RED4ext/Scripting/Natives/actionActionBase.hpp>
 #include <RED4ext/Relocation.hpp>
 

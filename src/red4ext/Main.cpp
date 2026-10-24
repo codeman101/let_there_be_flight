@@ -4,7 +4,13 @@
 #include "Utils/FlightModule.hpp"
 #include "stdafx.hpp"
 #include <InputLoader.hpp>
+#if defined(__APPLE__)
+#include <RED4ext/Api/ApiVersion.hpp>
+#include <RED4ext/Api/v1/Runtime.hpp>
+#include <RED4ext/Api/v1/Version.hpp>
+#else
 #include <RED4ext/Api/Sdk.hpp>
+#endif
 #include <RED4ext/InstanceType.hpp>
 #include <RED4ext/Common.hpp>
 #include <RED4ext/RTTITypes.hpp>
@@ -39,9 +45,9 @@ enum EDependencyStatus {
 #ifdef __APPLE__
 // LTBF R41/R42a: an already loaded red4ext/plugins/<name>/<name>.dylib and its Query() (macos/MacShims.cpp). RED4ext-macos loads
 // the plugins in folder order and runs each Main right away, so at Main a dependency can be present but not loaded yet.
-static const auto kArchiveXLVersion = RED4EXT_SEMVER(1, 27, 0);
-static const auto kTweakXLVersion = RED4EXT_SEMVER(1, 11, 0);
-static const auto kModSettingsVersion = RED4EXT_SEMVER(0, 2, 21);
+static const auto kArchiveXLVersion = RED4EXT_V1_SEMVER(1, 27, 0);
+static const auto kTweakXLVersion = RED4EXT_V1_SEMVER(1, 11, 0);
+static const auto kModSettingsVersion = RED4EXT_V1_SEMVER(0, 2, 21);
 
 enum : int {
   kDepArchiveXL = 1,  // ArchiveXL 1.27+
@@ -284,10 +290,17 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
 #endif
 
     // Input Loader releases (through v0.2.3) report 0.1.1 from Query(), so the floor must stay there
+#if defined(__APPLE__)
+    auto inputLoader_version = RED4EXT_V1_SEMVER(0, 1, 1);
+    auto archiveXL_version = RED4EXT_V1_SEMVER(1, 27, 0);
+    auto tweakXL_version = RED4EXT_V1_SEMVER(1, 11, 0);
+    auto modSettings_version = RED4EXT_V1_SEMVER(0, 2, 21);
+#else
     auto inputLoader_version = RED4EXT_SEMVER(0, 1, 1);
     auto archiveXL_version = RED4EXT_SEMVER(1, 27, 0);
     auto tweakXL_version = RED4EXT_SEMVER(1, 11, 0);
     auto modSettings_version = RED4EXT_SEMVER(0, 2, 21);
+#endif
 
 #ifdef __APPLE__
     // LTBF R41: Input Loader is not a plugin on macOS (the launcher runs the Perl input loader), so it is not checked.
@@ -405,6 +418,17 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
   return true;
 }
 
+#if defined(__APPLE__)
+RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::v1::PluginInfo *aInfo) {
+  aInfo->name = L"Let There Be Flight";
+  aInfo->author = L"Jack Humbert";
+  aInfo->version = RED4EXT_V1_SEMVER(MOD_VERSION_MAJOR, MOD_VERSION_MINOR, MOD_VERSION_PATCH);
+  aInfo->runtime = RED4EXT_V1_RUNTIME_VERSION_INDEPENDENT;
+  aInfo->sdk = RED4EXT_V1_SDK_VERSION_1_0_0_COMPAT_0_5_0;
+}
+
+RED4EXT_C_EXPORT uint32_t RED4EXT_CALL Supports() { return RED4EXT_API_VERSION_1_COMPAT_0; }
+#else
 RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo *aInfo) {
   aInfo->name = L"Let There Be Flight";
   aInfo->author = L"Jack Humbert";
@@ -414,3 +438,4 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo *aInfo) {
 }
 
 RED4EXT_C_EXPORT uint32_t RED4EXT_CALL Supports() { return RED4EXT_API_VERSION_LATEST; }
+#endif

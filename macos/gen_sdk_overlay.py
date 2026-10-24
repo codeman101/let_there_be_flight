@@ -51,7 +51,7 @@ RED4EXT_INLINE bool RED4ext::ISerializable::IsOfClass(const RED4ext::CClass* aCl
 }
 """)
 
-# StaticArray::operator[] and CRUID::Next (fork API). On macOS CRUID::Next asks the plugin (macos/MacShims.cpp): the game's
+# CRUID::Next (fork API). StaticArray::operator[] exists in SDK 1.0 (Containers/StaticArray.hpp), so that edit is gone. On macOS CRUID::Next asks the plugin (macos/MacShims.cpp): the game's
 # counter once R41b has its RVA, a plugin counter in a separate band until then.
 patch("RED4ext/NativeTypes.hpp", [
     ("struct CRUID\n{\n",
@@ -64,24 +64,13 @@ patch("RED4ext/NativeTypes.hpp", [
      "        id.unk00 = ltbf_mac_cruid_next();\n"
      "        return id;\n"
      "    }\n\n"),
-    ("struct StaticArray\n{\n",
-     "struct StaticArray\n{\n"
-     "    // LTBF R41: jackhumbert fork helpers\n"
-     "    const T& operator[](uint32_t aIndex) const\n"
-     "    {\n"
-     "        return entries[aIndex];\n"
-     "    }\n\n"
-     "    T& operator[](uint32_t aIndex)\n"
-     "    {\n"
-     "        return entries[aIndex];\n"
-     "    }\n\n"),
 ])
 
 # ExecuteFunction(ScriptInstance, CBaseFunction*, out, args...) (fork API).
 patch("RED4ext/Scripting/Utils.hpp", [(
     "template<typename... Args>\nbool ExecuteFunction(CClass* aContext, CBaseFunction* aFunc, void* aOut, Args&&... aArgs)\n",
     "// LTBF R41: jackhumbert fork helper\n"
-    "template<typename... Args>\nbool ExecuteFunction(ScriptInstance aInstance, CBaseFunction* aFunc, void* aOut, Args&&... aArgs)\n"
+    "template<typename... Args>\nbool ExecuteFunction(void* aInstance, CBaseFunction* aFunc, void* aOut, Args&&... aArgs)\n"
     "{\n    StackArgs_t args;\n    ((args.emplace_back(nullptr, &aArgs)), ...);\n\n"
     "    return ExecuteFunction(aInstance, aFunc, aOut, args);\n}\n\n"
     "template<typename... Args>\nbool ExecuteFunction(CClass* aContext, CBaseFunction* aFunc, void* aOut, Args&&... aArgs)\n")])
@@ -142,8 +131,8 @@ patch("RED4ext/Scripting/Natives/entEntity.hpp", [
 
 # CClass::CreateInstance<T> (fork API: the typed form of CreateInstance).
 patch("RED4ext/RTTITypes.hpp", [(
-    "    ScriptInstance CreateInstance(bool aZeroMemory = false) const;\n",
-    "    ScriptInstance CreateInstance(bool aZeroMemory = false) const;\n\n"
+    "    void* CreateInstance(bool aZeroMemory = false) const;\n",
+    "    void* CreateInstance(bool aZeroMemory = false) const;\n\n"
     "    // LTBF R41: jackhumbert fork helper (the typed form)\n"
     "    template<typename T>\n"
     "    T CreateInstance(bool aZeroMemory = false) const\n"

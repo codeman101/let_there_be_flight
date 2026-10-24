@@ -11,6 +11,17 @@
 // The Windows build gets the core RED4ext types into every file through the jackhumbert SDK headers' own include chains; the
 // macOS SDK's headers include less, so the precompiled header carries them.
 #include <RED4ext/RED4ext.hpp>
+// The merged macOS SDK exposes only the v1 plugin API. These aliases keep shared sources spelling RED4ext::Sdk and the
+// other entry types; Windows still gets the v0 names from its vendored SDK, so this stays inside the Apple block.
+namespace RED4ext
+{
+using Sdk = v1::Sdk;
+using PluginHandle = v1::PluginHandle;
+using PluginInfo = v1::PluginInfo;
+using EMainReason = v1::EMainReason;
+using GameState = v1::GameState;
+using SemVer = v1::SemVer;
+}
 #include "LtbfMacPrelude.hpp"
 #else
 #include <Windows.h>

@@ -15,7 +15,7 @@
 #include <set>
 #include <string>
 
-#include <RED4ext/Api/v0/PluginInfo.hpp>
+#include <RED4ext/Api/v1/PluginInfo.hpp>
 #include <spdlog/spdlog.h>
 
 namespace
@@ -208,22 +208,22 @@ void SkipOnce(const char* aPlaceholder, const char* aFeature)
 
 namespace
 {
-const RED4ext::Sdk* g_sdk = nullptr;
-RED4ext::PluginHandle g_handle = nullptr;
+const RED4ext::v1::Sdk* g_sdk = nullptr;
+RED4ext::v1::PluginHandle g_handle = nullptr;
 }
 
-void SetPlugin(const RED4ext::Sdk* aSdk, RED4ext::PluginHandle aHandle)
+void SetPlugin(const RED4ext::v1::Sdk* aSdk, RED4ext::v1::PluginHandle aHandle)
 {
     g_sdk = aSdk;
     g_handle = aHandle;
 }
 
-const RED4ext::Sdk* PluginSdk()
+const RED4ext::v1::Sdk* PluginSdk()
 {
     return g_sdk;
 }
 
-RED4ext::PluginHandle PluginHandleValue()
+RED4ext::v1::PluginHandle PluginHandleValue()
 {
     return g_handle;
 }
@@ -251,7 +251,7 @@ const char* HookResultName(HookResult aResult)
     return "?";
 }
 
-HookResult AttachHook(const RED4ext::Sdk* aSdk, RED4ext::PluginHandle aHandle, uintptr_t aTarget, void* aDetour, void** aOriginal,
+HookResult AttachHook(const RED4ext::v1::Sdk* aSdk, RED4ext::v1::PluginHandle aHandle, uintptr_t aTarget, void* aDetour, void** aOriginal,
                       const char* aName, bool aSharedWithCodeware)
 {
     if (aOriginal)
@@ -339,9 +339,9 @@ HookResult AttachHook(const RED4ext::Sdk* aSdk, RED4ext::PluginHandle aHandle, u
     return HookResult::Installed;
 }
 
-DepStatus HasDependency(const char* aName, RED4ext::SemVer aMinVersion, bool aAllowNotLoaded)
+DepStatus HasDependency(const char* aName, RED4ext::v1::SemVer aMinVersion, bool aAllowNotLoaded)
 {
-    using Query_t = void (*)(RED4ext::PluginInfo*);
+    using Query_t = void (*)(RED4ext::v1::PluginInfo*);
     // RED4ext loads every plugin before Main runs, so a dependency is an already loaded image.
     const auto expected = std::string("/red4ext/plugins/") + aName + "/" + aName + ".dylib";
     void* handle = nullptr;
@@ -374,7 +374,7 @@ DepStatus HasDependency(const char* aName, RED4ext::SemVer aMinVersion, bool aAl
         Log("[ltbf] %s %s", aName, aAllowNotLoaded ? "not found" : "is not loaded");
         return DepStatus::NotFound;
     }
-    if (aMinVersion > RED4EXT_SEMVER(0, 0, 0))
+    if (aMinVersion > RED4EXT_V1_SEMVER(0, 0, 0))
     {
         auto query = reinterpret_cast<Query_t>(dlsym(handle, "Query"));
         if (!query)
@@ -382,7 +382,7 @@ DepStatus HasDependency(const char* aName, RED4ext::SemVer aMinVersion, bool aAl
             Log("[ltbf] %s found, but could not be queried for version", aName);
             return DepStatus::FoundCouldNotBeQueried;
         }
-        RED4ext::PluginInfo info{};
+        RED4ext::v1::PluginInfo info{};
         query(&info);
         const bool ok = info.version >= aMinVersion;
         Log("[ltbf] %s found with version %u.%u.%u%s", aName, info.version.major, info.version.minor, info.version.patch,

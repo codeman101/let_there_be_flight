@@ -226,7 +226,7 @@ void FlightAudio::UpdateEvent(RED4ext::CString emitterName, RED4ext::Matrix matr
 #else
     auto &allProps = flightAudioUpdateCls->allProps;
 #endif
-    for (int i = 0; i < allProps.size; i++) {
+    for (int i = 0; i < allProps.Size(); i++) {
       auto pParameterName = allProps[i]->name.ToString();
       eventMap[emitterName.c_str()]->setParameterByName(
           pParameterName, flightAudioUpdateCls->GetProperty(pParameterName)->GetValue<float>(update));

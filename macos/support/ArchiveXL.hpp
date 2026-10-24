@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <dlfcn.h>
-#include <RED4ext/Api/PluginHandle.hpp>
+#include <RED4ext/Api/v1/PluginHandle.hpp>
 
 #include <RED4ext/Callback.hpp>
 #include <RED4ext/Memory/Allocators.hpp>

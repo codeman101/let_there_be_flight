@@ -113,7 +113,7 @@ void IFlightConfiguration::AddSlots(ent::SlotComponent *slotComponent) {
   slot->slotName = "CustomFlightCamera";
   slot->relativePosition = this->flightCameraOffset;
   slotComponent->slots.EmplaceBack(*slot);
-  LTBF_SLOT_INDEX_LOOKUP(slotComponent).Emplace(slot->slotName, slotComponent->slots.size - 1);
+  LTBF_SLOT_INDEX_LOOKUP(slotComponent).Emplace(slot->slotName, slotComponent->slots.Size() - 1);
 
   //for (auto thruster : thrusters) {
   //  auto slot = reinterpret_cast<ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));

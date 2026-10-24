@@ -149,7 +149,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     slot->relativePosition.Y += 0.75;
     slot->slotName = "PanzerCannon";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
   {
     auto slot = reinterpret_cast<RED4ext::ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));
@@ -158,7 +158,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     slot->relativePosition.Y += 0.75;
     slot->slotName = "PanamVehicleTurret";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
   {
     auto slot = reinterpret_cast<RED4ext::ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));
@@ -167,7 +167,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     slot->relativePosition.Y += 0.75;
     slot->slotName = "PanzerHomingMissiles";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
   {
     auto slot = reinterpret_cast<RED4ext::ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));
@@ -176,7 +176,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     // slot->relativePosition.Y += 0.75;
     slot->slotName = "WeaponLeft";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
   {
     auto slot = reinterpret_cast<RED4ext::ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));
@@ -185,7 +185,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     // slot->relativePosition.Y += 0.75;
     slot->slotName = "PanzerCounterMeasuresLeft";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
   {
     auto slot = reinterpret_cast<RED4ext::ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));
@@ -194,7 +194,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     // slot->relativePosition.Y += 0.75;
     slot->slotName = "WeaponRight";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
   {
     auto slot = reinterpret_cast<RED4ext::ent::Slot *>(rtti->GetClass("entSlot")->CreateInstance(true));
@@ -203,7 +203,7 @@ void __fastcall AddWeaponSlots(RED4ext::ent::SlotComponent *sc) {
     // slot->relativePosition.Y += 0.75;
     slot->slotName = "PanzerCounterMeasuresRight";
     sc->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(sc).Emplace(slot->slotName, sc->slots.Size() - 1);
   }
 }
 

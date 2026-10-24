@@ -68,7 +68,7 @@ struct ScriptHost {
   uint8_t unk5F;
   uint64_t unk60;
   RED4ext::HashMap<uint64_t, uint64_t> unk68;
-  RED4ext::SharedMutex unk68MUTX;
+  RED4ext::SharedSpinLock unk68MUTX;
   uint8_t unk99;
   uint8_t unk9A;
   uint8_t unk9B;

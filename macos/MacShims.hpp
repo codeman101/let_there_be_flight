@@ -7,8 +7,9 @@
 #include <filesystem>
 #include <string>
 
-#include <RED4ext/Api/PluginHandle.hpp>
-#include <RED4ext/Api/Sdk.hpp>
+#include <RED4ext/Api/v1/PluginHandle.hpp>
+#include <RED4ext/Api/v1/Sdk.hpp>
+#include <RED4ext/Api/v1/SemVer.hpp>
 
 extern "C"
 {
@@ -34,9 +35,9 @@ std::filesystem::path RootDir();
 void Log(const char* aFormat, ...) __attribute__((format(printf, 1, 2)));
 
 // The plugin's RED4ext handle and SDK, saved by Main(Load) for ltbf_registerNatives.
-void SetPlugin(const RED4ext::Sdk* aSdk, RED4ext::PluginHandle aHandle);
-const RED4ext::Sdk* PluginSdk();
-RED4ext::PluginHandle PluginHandleValue();
+void SetPlugin(const RED4ext::v1::Sdk* aSdk, RED4ext::v1::PluginHandle aHandle);
+const RED4ext::v1::Sdk* PluginSdk();
+RED4ext::v1::PluginHandle PluginHandleValue();
 
 // Hook targets Codeware hooks too (macOS RED4ext accepts one hook per target): Entity_Initialize 0xC985EC and
 // ScriptValidator_Validate 0x21FBF90. LTBF attaches these from ltbf_registerNatives through Codeware's chain only.
@@ -57,7 +58,7 @@ const char* HookResultName(HookResult aResult);
 //    REFUSED and the feature is skipped; a direct attach happens only when Codeware is not loaded at all;
 //  - any other target asks Codeware and ArchiveXL first (a plugin that does not own the target answers false), then RED4ext once.
 // *aOriginal is null unless the result is Installed or Chained.
-HookResult AttachHook(const RED4ext::Sdk* aSdk, RED4ext::PluginHandle aHandle, uintptr_t aTarget, void* aDetour, void** aOriginal,
+HookResult AttachHook(const RED4ext::v1::Sdk* aSdk, RED4ext::v1::PluginHandle aHandle, uintptr_t aTarget, void* aDetour, void** aOriginal,
                       const char* aName, bool aSharedWithCodeware);
 
 // Dependency check on macOS: a loaded image whose path ends with red4ext/plugins/<name>/<name>.dylib (or dlopen(RTLD_NOLOAD) of
@@ -74,7 +75,7 @@ enum class DepStatus
     NotFound = 4,
     PresentNotLoaded = 5
 };
-DepStatus HasDependency(const char* aName, RED4ext::SemVer aMinVersion, bool aAllowNotLoaded);
+DepStatus HasDependency(const char* aName, RED4ext::v1::SemVer aMinVersion, bool aAllowNotLoaded);
 
 // A one-time log line for a feature that waits on an R41b address or offset (LTBF_MAC_TODO_R41b_* placeholders).
 void SkipOnce(const char* aPlaceholder, const char* aFeature);

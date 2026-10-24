@@ -51,8 +51,8 @@ void EntityExt::AddComponent(Handle<ent::IComponent> const & componentToAdd) {
       vcd->mesh.path = meshComponent->mesh.path;
       vcc->appearanceDependency.EmplaceBack(*vcd);
 
-      if (LTBF_VCC_RESOURCE_PATHS(vcc).size) {
-        for (int i = 0; i < LTBF_VCC_RESOURCE_PATHS(vcc).size; i++) {
+      if (LTBF_VCC_RESOURCE_PATHS(vcc).Size()) {
+        for (int i = 0; i < LTBF_VCC_RESOURCE_PATHS(vcc).Size(); i++) {
           if (LTBF_VCC_RESOURCE_PATHS(vcc)[i] == meshComponent->mesh.path) {
             break;
           } else if (LTBF_VCC_RESOURCE_PATHS(vcc)[i] > meshComponent->mesh.path) {
@@ -84,9 +84,9 @@ void EntityExt::AddComponent(Handle<ent::IComponent> const & componentToAdd) {
                 break;
               }
             }
-            if (body_index != desc->compiledEffectInfo.componentNames.size) {
+            if (body_index != desc->compiledEffectInfo.componentNames.Size()) {
               uint64_t bitToCopy = (1ULL << body_index);
-              uint64_t bitToAdd = (1ULL << desc->compiledEffectInfo.componentNames.size);
+              uint64_t bitToAdd = (1ULL << desc->compiledEffectInfo.componentNames.Size());
               desc->compiledEffectInfo.componentNames.PushBack(componentToAdd->name);
               for (auto & event : desc->compiledEffectInfo.eventsSortedByRUID) {
                 if ((event.flags & 1) != 1)
@@ -163,7 +163,7 @@ void EntityExt::AddSlot(CName boneName, CName slotName, Vector3 relativePosition
     slot->relativePosition = relativePosition;
     slot->relativeRotation = relativeRotation;
     slotComponent->slots.EmplaceBack(*slot);
-    LTBF_SLOT_INDEX_LOOKUP(slotComponent).Emplace(slot->slotName, slotComponent->slots.size - 1);
+    LTBF_SLOT_INDEX_LOOKUP(slotComponent).Emplace(slot->slotName, slotComponent->slots.Size() - 1);
   }
 }
 

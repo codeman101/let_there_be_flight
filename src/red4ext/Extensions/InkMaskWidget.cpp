@@ -21,7 +21,7 @@ struct InkMaskWidget : RED4ext::ink::MaskWidget {
     if (s_isValid) {
       RED4ext::StackArgs_t args;
       args.emplace_back(nullptr, &value);
-      RED4ext::ExecuteFunction(RED4ext::ScriptInstance(nullptr), s_isValid, &valid, args);
+      RED4ext::ExecuteFunction(static_cast<void*>(nullptr), s_isValid, &valid, args);
     }
 #else
     RED4ext::ExecuteFunction("redResourceReferenceScriptToken", "IsValid", &valid, &value);

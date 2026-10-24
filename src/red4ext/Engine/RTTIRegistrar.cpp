@@ -38,7 +38,12 @@ void Engine::RTTIRegistrar::Register()
 {
     if (!m_registered)
     {
-        RED4ext::RTTIRegistrator::Add(m_regFunc, m_buildFunc);
+        // RTTIRegistrator::Add was removed in SDK 1.0 (#201); it forwarded to these two calls.
+        auto* rtti = RED4ext::CRTTISystem::Get();
+        if (m_regFunc)
+            rtti->AddRegisterCallback(m_regFunc);
+        if (m_buildFunc)
+            rtti->AddPostRegisterCallback(m_buildFunc);
         m_registered = true;
     }
 }

@@ -2,8 +2,13 @@
 
 #include <RED4ext/Common.hpp>
 #include <RED4ext/Relocation.hpp>
+#if defined(__APPLE__)
+#include <RED4ext/Api/v1/PluginHandle.hpp>
+#include <RED4ext/Api/v1/Sdk.hpp>
+#else
 #include <RED4ext/Api/PluginHandle.hpp>
 #include <RED4ext/Api/Sdk.hpp>
+#endif
 #include <functional>
 #include <iostream>
 #include <map>
