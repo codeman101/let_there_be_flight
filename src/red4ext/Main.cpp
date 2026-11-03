@@ -45,14 +45,14 @@ enum EDependencyStatus {
 #ifdef __APPLE__
 // LTBF R41/R42a: an already loaded red4ext/plugins/<name>/<name>.dylib and its Query() (macos/MacShims.cpp). RED4ext-macos loads
 // the plugins in folder order and runs each Main right away, so at Main a dependency can be present but not loaded yet.
-static const auto kArchiveXLVersion = RED4EXT_V1_SEMVER(1, 27, 0);
-static const auto kTweakXLVersion = RED4EXT_V1_SEMVER(1, 11, 0);
-static const auto kModSettingsVersion = RED4EXT_V1_SEMVER(0, 2, 21);
+static const auto kArchiveXLVersion = RED4EXT_V1_SEMVER(1, 28, 0);
+static const auto kTweakXLVersion = RED4EXT_V1_SEMVER(1, 12, 0);
+static const auto kModSettingsVersion = RED4EXT_V1_SEMVER(0, 2, 23);
 
 enum : int {
-  kDepArchiveXL = 1,  // ArchiveXL 1.27+
-  kDepTweakXL = 2,    // TweakXL 1.11+
-  kDepModSettings = 4 // Mod Settings 0.2.21+ (optional)
+  kDepArchiveXL = 1,  // ArchiveXL 1.28+
+  kDepTweakXL = 2,    // TweakXL 1.12+
+  kDepModSettings = 4 // Mod Settings 0.2.23+ (optional)
 };
 
 // aLate = false (Main): a dependency that is present but not loaded yet counts as found.
@@ -188,7 +188,7 @@ extern "C" __attribute__((visibility("default"))) void ltbf_registerNatives() {
   //    is loaded now: the dependencies are checked again (loaded, Query version), and only the registration whose plugin is missing
   //    or too old is skipped. The natives and types above are registered either way, so LTBF's scripts link.
   const int deps = ltbf_mac_check_dependencies(1);
-  const char *tweaks = "SKIPPED (TweakXL 1.11+ is not loaded)";
+  const char *tweaks = "SKIPPED (TweakXL 1.12+ is not loaded)";
   if (deps & kDepTweakXL) {
     const bool nativeTweaks = TweakXL::RegisterTweak(handle, MOD_PACKED_NATIVE_TWEAKS_FILENAME);
     const bool yamlTweaks = TweakXL::RegisterTweak(handle, MOD_PACKED_YAML_TWEAKS_FILENAME);
@@ -204,7 +204,7 @@ extern "C" __attribute__((visibility("default"))) void ltbf_registerNatives() {
   }
   // R42b: by NATREG ArchiveXL's depot is already initialized ("Can't register archive ...: depot is already initialized"), so the
   // packaging installs the archive into archive/Mac/mod/, which ArchiveXL mounts itself at startup. Registering is skipped then.
-  const char *archive = "SKIPPED (ArchiveXL 1.27+ is not loaded)";
+  const char *archive = "SKIPPED (ArchiveXL 1.28+ is not loaded)";
   std::error_code archiveError;
   const auto macArchive = Utils::GetRootDir() / "archive" / "Mac" / "mod" / "let_there_be_flight.archive";
   if (std::filesystem::is_regular_file(macArchive, archiveError)) {
@@ -292,14 +292,14 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     // Input Loader releases (through v0.2.3) report 0.1.1 from Query(), so the floor must stay there
 #if defined(__APPLE__)
     auto inputLoader_version = RED4EXT_V1_SEMVER(0, 1, 1);
-    auto archiveXL_version = RED4EXT_V1_SEMVER(1, 27, 0);
-    auto tweakXL_version = RED4EXT_V1_SEMVER(1, 11, 0);
-    auto modSettings_version = RED4EXT_V1_SEMVER(0, 2, 21);
+    auto archiveXL_version = RED4EXT_V1_SEMVER(1, 28, 0);
+    auto tweakXL_version = RED4EXT_V1_SEMVER(1, 12, 0);
+    auto modSettings_version = RED4EXT_V1_SEMVER(0, 2, 23);
 #else
     auto inputLoader_version = RED4EXT_SEMVER(0, 1, 1);
-    auto archiveXL_version = RED4EXT_SEMVER(1, 27, 0);
-    auto tweakXL_version = RED4EXT_SEMVER(1, 11, 0);
-    auto modSettings_version = RED4EXT_SEMVER(0, 2, 21);
+    auto archiveXL_version = RED4EXT_SEMVER(1, 28, 0);
+    auto tweakXL_version = RED4EXT_SEMVER(1, 12, 0);
+    auto modSettings_version = RED4EXT_SEMVER(0, 2, 23);
 #endif
 
 #ifdef __APPLE__
@@ -335,8 +335,8 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
       // ltbf_registerNatives, and skips only the tweak or archive registration whose plugin is missing there.
       spdlog::error("missing or too old:{}{}{} - Let There Be Flight stays loaded (its scripts are in the offline cache); the tweaks "
                     "or the archive of a missing plugin are skipped in ltbf_registerNatives",
-                    has_archiveXL ? "" : " ArchiveXL 1.27+", has_tweakXL ? "" : " TweakXL 1.11+",
-                    has_modSettings ? "" : " Mod Settings 0.2.21+");
+                    has_archiveXL ? "" : " ArchiveXL 1.28+", has_tweakXL ? "" : " TweakXL 1.12+",
+                    has_modSettings ? "" : " Mod Settings 0.2.23+");
       LtbfMac::Log("[ltbf] dependencies not met at Main (see above): continuing");
 #else
       spdlog::error("Dependencies not met - game will load without Let There Be Flight");
