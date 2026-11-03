@@ -112,6 +112,10 @@ CClass* IFlightConfiguration::GetConfigurationClass(ent::Entity* entity) {
 
 void IFlightConfiguration::Setup(vehicle::BaseObject * vehicle) {
 
+  // do not rely on the C++ constructor running for script-derived configuration
+  // classes: an unarmed -1 is what keeps RemoveColliders off the chassis shapes
+  this->originalShapeCount = -1;
+
   this->thrusters = DynArray<Handle<IFlightThruster>>(new Memory::DefaultAllocator());
   auto onInit = GetType()->GetFunction("OnSetup");
   if (onInit) {
@@ -160,6 +164,28 @@ void IFlightConfiguration::AddSlots(ent::SlotComponent *slotComponent) {
 //   }
 // }
 
+// the chassis body holds shapes we never touch (wheels, wreck pieces), so the
+// live list is queried into a buffer big enough for all of them
+static constexpr uint32_t shapeQueryBufferSize = 64;
+
+bool IFlightConfiguration::IsTrackedShape(physx::PxShape *shape) const {
+  for (int32_t i = 0; i < this->attachedShapeCount; i++) {
+    if (this->attachedShapes[i] == shape)
+      return true;
+  }
+  return false;
+}
+
+void IFlightConfiguration::TrackShape(physx::PxShape *shape) {
+  if (this->attachedShapeCount >= IFlightConfiguration::maxTrackedShapes) {
+    LTBF_WARN_ONCE("[FlightConfiguration] more than {} thruster shapes attached; the rest will not be removed",
+                   int32_t(IFlightConfiguration::maxTrackedShapes));
+    return;
+  }
+  this->attachedShapes[this->attachedShapeCount] = shape;
+  this->attachedShapeCount++;
+}
+
 void IFlightConfiguration::AddColliders() {
 #ifdef __APPLE__
   // LTBF R41: the thruster colliders need the chassis proxy id and lock offsets, ProxyID::GetProxy, FilterData::Init (inlined on
@@ -196,8 +222,11 @@ void IFlightConfiguration::AddColliders() {
     }
     auto body = (physx::PxRigidDynamic *) key->bodies.entries[0];
 
-    if (this->originalShapeCount == -1)
+    if (this->originalShapeCount == -1) {
       this->originalShapeCount = body->getNbShapes();
+      // nothing of ours is attached, so any pointer left over is stale
+      this->attachedShapeCount = 0;
+    }
 
     auto filterData = (physics::FilterData*)malloc(sizeof(physics::FilterData));
     physics::FilterData::Init(filterData);
@@ -227,6 +256,7 @@ void IFlightConfiguration::AddColliders() {
           shape->setQueryFilterData(&filterData->queryFilter);
 
           body->attachShape(*shape);
+          this->TrackShape(shape);
 
           shape->release2();
         }
@@ -235,14 +265,17 @@ void IFlightConfiguration::AddColliders() {
 
     free(filterData);
 
-    auto newCount = body->getNbShapes();
-    
+    physx::PxShape *shapes[shapeQueryBufferSize];
+    auto nbShapes = body->getShapes(shapes, shapeQueryBufferSize, 0);
+
     proxyHelper.mutex->Lock();
-    // add indices to bottom mask
-    for (int i = this->originalShapeCount; i < newCount; i++) {
+    // add the indices of our own shapes to the bottom mask
+    for (uint32_t i = 0; i < nbShapes; i++) {
+      if (this->IsTrackedShape(shapes[i])) {
 //      chassis->unk174 |= (1 << i);
-      proxyHelper.SetSimulationShape(true, 0, i);
-      proxyHelper.SetIsQueryable(true, 0, i);
+        proxyHelper.SetSimulationShape(true, 0, i);
+        proxyHelper.SetIsQueryable(true, 0, i);
+      }
     }
 
     proxyHelper.UpdateProxyCache();
@@ -257,8 +290,11 @@ void IFlightConfiguration::OnActivationCore() {
 }
 
 void IFlightConfiguration::RemoveColliders() {
-  if (this->originalShapeCount == -1)
+  if (this->originalShapeCount == -1 || this->attachedShapeCount == 0) {
+    this->attachedShapeCount = 0;
+    this->originalShapeCount = -1;
     return;
+  }
 #ifdef __APPLE__
   // LTBF R41: AddColliders is skipped on macOS (see there), so originalShapeCount stays -1 and nothing reaches this point.
   return;
@@ -288,8 +324,6 @@ void IFlightConfiguration::RemoveColliders() {
     }
     auto body = (physx::PxRigidDynamic *) key->bodies.entries[0];
 
-    auto nbShapes = body->getNbShapes();
-
     // remove indexes from bottom mask
 //    for (int i = this->originalShapeCount; i < nbShapes; i++) {
 //      chassis->unk174 &= ~(1 << i);
@@ -298,18 +332,26 @@ void IFlightConfiguration::RemoveColliders() {
 //    }
     proxyHelper.mutex->Lock();
 
-    physx::PxShape *shapes[16];
-    body->getShapes(shapes, 16, this->originalShapeCount);
-    for (int i = 0; i < fmin(nbShapes - this->originalShapeCount, 16); i++) {
+    // the shape array is re-queried and matched by pointer: the game compacts
+    // it on removal and destruction both removes chassis shapes and adds wreck
+    // ones, so anything derived from the index range we attached at is wrong
+    physx::PxShape *shapes[shapeQueryBufferSize];
+    auto nbShapes = body->getShapes(shapes, shapeQueryBufferSize, 0);
+    for (uint32_t i = 0; i < nbShapes; i++) {
       // this might cause a crash when the game exits with:
       // * vehicle flight active?
       // * more than one vehicle flight active?
-      body->detachShape(*shapes[i], true);
+      if (this->IsTrackedShape(shapes[i])) {
+        body->detachShape(*shapes[i], true);
+      }
     }
 
     proxyHelper.UpdateProxyCache();
     proxyHelper.Unlock();
   }
+
+  this->attachedShapeCount = 0;
+  this->originalShapeCount = -1;
 #endif
 }
 

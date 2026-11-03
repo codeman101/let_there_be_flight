@@ -425,6 +425,16 @@
             },
             {
               "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Hud-Attached-To-Player",
+              "femaleVariant": "HUD attached to player (experimental)"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Hud-Attached-To-Player-Description",
+              "femaleVariant": "Spawn the flight HUD once with the rest of your HUD instead of once per vehicle. Off rebuilds the whole HUD every time you get in or out of a car, which is the enter/exit stutter and the HUD flicker. Reload a save after changing this."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
               "secondaryKey": "UI-Settings-Engine-Volume",
               "femaleVariant": "Engine Volume"
             },
@@ -502,6 +512,271 @@
               "$type": "localizationPersistenceOnScreenEntry",
               "secondaryKey": "Quickhacks-Funhouse-Description",
               "femaleVariant": "Charm this vehicle with the folly of youth and make it a little bouncy"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Key-Bindings",
+              "femaleVariant": "Key Bindings"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Flight-Toggle",
+              "femaleVariant": "Toggle Flight"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Yaw-Left",
+              "femaleVariant": "Yaw Left"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Yaw-Right",
+              "femaleVariant": "Yaw Right"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Pitch-Forward",
+              "femaleVariant": "Pitch Forward"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Pitch-Backward",
+              "femaleVariant": "Pitch Backward"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Roll-Left",
+              "femaleVariant": "Roll Left"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Roll-Right",
+              "femaleVariant": "Roll Right"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Lift-Up",
+              "femaleVariant": "Lift Up"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Lift-Down",
+              "femaleVariant": "Lift Down"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Sway-Left",
+              "femaleVariant": "Sway Left"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Sway-Right",
+              "femaleVariant": "Sway Right"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Deploy-Glider",
+              "femaleVariant": "Deploy Glider"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Pack-Glider",
+              "femaleVariant": "Pack Glider"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Hover-Factor",
+              "femaleVariant": "Hover Factor"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Hover-And-Fly-Height-Dampening",
+              "femaleVariant": "Hover & Fly Height Dampening"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Hover-And-Fly-Height-Correction",
+              "femaleVariant": "Hover & Fly Height Correction"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Angular-Damp-Max",
+              "femaleVariant": "Angular Damp Max"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Angular-Damp-Max-Description",
+              "femaleVariant": "Upper limit on the angular damping applied while flying. Higher values settle rotation faster."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Detachable-Thrusters",
+              "femaleVariant": "Detachable Thrusters"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Explosion-Threshold",
+              "femaleVariant": "Explosion Threshold"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Explosion-Threshold-Description",
+              "femaleVariant": "How hard a flying vehicle has to hit something before it explodes. Higher values take more punishment."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-TPP-Camera-Pitch-Offset",
+              "femaleVariant": "TPP Camera Pitch Offset"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-TPP-Camera-Pitch-Offset-Description",
+              "femaleVariant": "Pitch offset in degrees applied to the third person camera while flying."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Enable-Center-On-Mass",
+              "femaleVariant": "Center Camera On Mass"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Enable-Center-On-Mass-Description",
+              "femaleVariant": "Point the third person camera at the vehicle's center of mass instead of its origin."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Invert-Lift",
+              "femaleVariant": "Invert Lift"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Invert-Lift-Description",
+              "femaleVariant": "Flip the lift axis so pulling down climbs and pushing up descends. Applies to the gamepad stick and the keyboard lift keys."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Yaw-Damp-Factor",
+              "femaleVariant": "Yaw Damp Factor"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Yaw-Damp-Factor-Description",
+              "femaleVariant": "Extra resistance on yaw only. Raise it so the vehicle stops turning sooner after you let go of the stick, without stiffening pitch and roll."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Sway-With-Yaw",
+              "femaleVariant": "Sway With Yaw"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Sway-With-Yaw-Description",
+              "femaleVariant": "How much turning redirects your existing velocity into the new heading. Raise it if turning feels slippery and the vehicle keeps sliding sideways."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Roll-With-Yaw",
+              "femaleVariant": "Roll With Yaw"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Roll-With-Yaw-Description",
+              "femaleVariant": "How much the vehicle banks into a turn. Affects Hover & Fly, Fly, Hover and Automatic modes."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Automatic-Lift-Factor",
+              "femaleVariant": "Lift Factor"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Automatic-Lift-Factor-Description",
+              "femaleVariant": "How fast the lift input raises and lowers the held hover height in Automatic mode."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Automatic-Hover-Factor",
+              "femaleVariant": "Hover Factor"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Automatic-Hover-Factor-Description",
+              "femaleVariant": "Gain on Automatic mode's lift force. Lower it for a softer, slower hover; raise it for a stiffer one that holds height harder."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Gamepad-Toggle-Requires-Hold",
+              "femaleVariant": "Gamepad Toggle Requires Hold"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Gamepad-Toggle-Requires-Hold-Description",
+              "femaleVariant": "Require the gamepad flight toggle to be held (see Gamepad Toggle Hold Time) instead of tapped, so a stray stick click does not activate flight. The keyboard toggle stays a tap. Best with Toggle Flight (Gamepad) moved off L3: with a route set, an L3 hold starts autodrive first and flight is refused."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Gamepad-Toggle-Hold-Time",
+              "femaleVariant": "Gamepad Toggle Hold Time"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Gamepad-Toggle-Hold-Time-Description",
+              "femaleVariant": "Seconds to hold the gamepad flight toggle when Gamepad Toggle Requires Hold is on. Vanilla autodrive is a 0.5 second hold on the same button, so keep this above 0.5 or one hold does both."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "Input-Hint-Flight-Toggle-Pad",
+              "femaleVariant": "Toggle Flight (Gamepad)"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Flight-Availability",
+              "femaleVariant": "Flight Availability"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Flight-Availability-Description",
+              "femaleVariant": "Which vehicles you are allowed to fly. Restricting this does not change how vehicles look or drive, it only decides where the flight toggle, its input hint and the flight quickhacks are offered."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Flight-Availability-All-Vehicles",
+              "femaleVariant": "All Vehicles"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Flight-Availability-Owned-Vehicles",
+              "femaleVariant": "Owned Vehicles"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Flight-Availability-Player-Vehicle-Only",
+              "femaleVariant": "Player Vehicle Only"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Flight-Availability-Whitelist-Only",
+              "femaleVariant": "Whitelist Only"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-PhysX-Flight-Physics",
+              "femaleVariant": "PhysX Flight Physics (experimental)"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-PhysX-Flight-Physics-Description",
+              "femaleVariant": "Let the physics engine simulate flying vehicles directly, so landing, skidding along the ground and crashing behave like real contacts with surface friction. Off uses the game's own vehicle movement, which can jitter when resting on the ground. Applies the next time flight is active."
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Ground-Friction",
+              "femaleVariant": "Ground Friction"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "secondaryKey": "UI-Settings-Ground-Friction-Description",
+              "femaleVariant": "How strongly a flying vehicle grips the ground when it touches or scrapes along it (PhysX Flight Physics only). 0 leaves it sliding freely; higher values stop slides and crashes faster."
             }
           ]
         }

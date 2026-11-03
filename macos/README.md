@@ -1,7 +1,7 @@
 # Let There Be Flight for macOS (Apple Silicon)
 
-A port of [jackhumbert/let_there_be_flight](https://github.com/jackhumbert/let_there_be_flight) `main` (6d7c1b7, which is v0.3.18 plus 18
-commits) to the native macOS build of Cyberpunk 2077 (2.3.1, Steam, Apple Silicon). Port by codeman101 (skyman3215). MIT, like upstream.
+A port of [jackhumbert/let_there_be_flight](https://github.com/jackhumbert/let_there_be_flight) `main` (513ea3a, merged into
+this branch on 2026-11-03) to the native macOS build of Cyberpunk 2077 (2.3.1, Steam, Apple Silicon). Port by codeman101 (skyman3215). MIT, like upstream.
 
 Everything macOS-specific is in this folder and in `#ifdef __APPLE__` blocks in `src/red4ext`. The Windows build is meant to be
 unchanged: `WINDOWS_CHECK.md` lists every shared file whose Windows view (`unifdef -U__APPLE__`) differs from `main` and why each
@@ -18,6 +18,9 @@ the player is mounted as driver):
 - Hand-tested by a player (2026-10-13): flying around Night City works, forward flight included.
 - Rebased onto `main` on 2026-10-14. The automated runs and the 2026-10-13 hand test above were made on the v0.3.18 base. The rebased
   build (`main` 6d7c1b7 plus the Mac commits) was hand-tested in game on 2026-10-14: take-off, flying, camera and audio work.
+- `main` 513ea3a (game 2.5, autopilot, PhysX flight physics) merged on 2026-11-03. The merged build compiles and passes the offline tests;
+  it has not been tested in game yet. Upstream's new PhysX flight physics, scrape audio and built-in mod loader have no macOS path
+  (`NOT_YET.md`); flight on macOS keeps applying its forces through the vehicle's physics data.
 - Open: the flight keys cannot be rebound in the Controls menu on macOS; a few effects are not ported yet (`NOT_YET.md`). The automated
   test's forward-thrust stall (about 0.5 m/s at its spot) did not happen in the hand test (`NOT_YET.md`).
 

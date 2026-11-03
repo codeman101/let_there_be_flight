@@ -47,7 +47,14 @@ configure_red4ext(src/red4ext)
 set(MOD_NATIVE_TWEAKS ON)
 set(MOD_YAML_TWEAKS ON)
 configure_tweaks(src/tweaks)
-configure_archives(src/wolvenkit/packed/archive/pc/mod/let_there_be_flight.archive src/archive_xl/let_there_be_flight.archive.xl)
+# Tweaks always go through TweakXL. tools/tweaks_to_json.py can write them as JSON for the game's built-in
+# TweakDB loader (2.5+), but that loader crashes on new typed flats, so the JSON is not shipped: the built-in
+# loader would pick up anything under a "tweaks" folder in the plugin directory.
+configure_archives(src/wolvenkit/packed/archive/pc/mod/let_there_be_flight.archive)
+# One config, installed twice: .archive.xl is read by ArchiveXL when it is installed, .archive.json by the
+# game's built-in loader (2.5+, via GameModFolders.hpp) when it is not. JSON is valid YAML, so ArchiveXL reads it too.
+configure_mod_file(src/archive_xl/${MOD_SLUG}.archive.json red4ext/plugins/${MOD_SLUG}/${MOD_SLUG}.archive.json)
+configure_mod_file(src/archive_xl/${MOD_SLUG}.archive.json red4ext/plugins/${MOD_SLUG}/${MOD_SLUG}.archive.xl)
 
 find_package(Detours)
 find_package(FMOD)
@@ -57,6 +64,7 @@ find_package(PhysX3)
 find_package(ModSettings)
 find_package(InputLoader)
 find_package(ArchiveXL)
+list(TRANSFORM MOD_REQUIREMENTS REPLACE "^(ArchiveXL .*)$" "\\1 (optional on game 2.5+)")
 find_package(TweakXL)
 
 target_link_libraries(let_there_be_flight.dll
@@ -81,7 +89,7 @@ configure_folder_file(readme.md)
 configure_folder_file(license.md)
 
 list(APPEND MOD_REQUIREMENTS "Input Loader v0.2.3+")
-list(APPEND MOD_REQUIREMENTS "Mod Settings v0.2.21+ (optional)")
+list(APPEND MOD_REQUIREMENTS "Mod Settings v0.2.23+ (optional)")
 
 configure_uninstall()
 configure_release(${MOD_SLUG}_${MOD_VERSION_STR}.zip)

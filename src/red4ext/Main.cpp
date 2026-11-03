@@ -15,6 +15,11 @@
 
 #include <ArchiveXL.hpp>
 #include <TweakXL.hpp>
+#ifndef __APPLE__
+#include "GameModFolders.hpp"
+#endif
+#include "Navigation/NavMap.hpp"
+#include <RED4ext/ResourceDepot.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -125,7 +130,26 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes() {
 }
 
 bool loaded = false;
+bool builtInArchives = false;
 RED4ext::PluginHandle pluginHandle;
+
+// After initialization: report whether our archive got mounted (a file only it contains), so logs show
+// whether the built-in loader / ArchiveXL actually picked it up
+bool OnInitializationExit(RED4ext::CGameApplication *aApp) {
+  auto depot = RED4ext::ResourceDepot::Get();
+  auto mounted = depot && depot->ResourceExists("user\\jackhumbert\\localization\\let_there_be_flight.en-us.json");
+  spdlog::info("Archive mounted: {} (via {})", mounted, builtInArchives ? "built-in mod loader" : "ArchiveXL");
+
+  // One value per kind of entry the tweaks create: a new typed flat and a field on a cloned record
+  // Read the flats directly: calling the static TweakDBInterface natives through ExecuteFunction crashes on 2.5
+  auto tweakDB = RED4ext::TweakDB::Get();
+  RED4ext::CString typeName;
+  tweakDB->TryGetValue(RED4ext::TweakDBID("playerStateMachine.VehicleFlight.typeName"), typeName);
+  RED4ext::CName actionName;
+  tweakDB->TryGetValue(RED4ext::TweakDBID("DeviceAction.FlightMalfunction.actionName"), actionName);
+  spdlog::info("Tweaks applied: typeName='{}' actionName='{}'", typeName.c_str(), actionName.ToString());
+  return FlightAudio::Load(aApp);
+}
 
 #ifdef __APPLE__
 void FlightSettingsMacEnsureMaps(); // FlightSettings.cpp
@@ -285,9 +309,9 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
 
     // Input Loader releases (through v0.2.3) report 0.1.1 from Query(), so the floor must stay there
     auto inputLoader_version = RED4EXT_SEMVER(0, 1, 1);
-    auto archiveXL_version = RED4EXT_SEMVER(1, 27, 0);
-    auto tweakXL_version = RED4EXT_SEMVER(1, 11, 0);
-    auto modSettings_version = RED4EXT_SEMVER(0, 2, 21);
+    auto archiveXL_version = RED4EXT_SEMVER(1, 28, 0);
+    auto tweakXL_version = RED4EXT_SEMVER(1, 12, 0);
+    auto modSettings_version = RED4EXT_SEMVER(0, 2, 23);
 
 #ifdef __APPLE__
     // LTBF R41: Input Loader is not a plugin on macOS (the launcher runs the Perl input loader), so it is not checked.
@@ -308,7 +332,18 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
 #else
     auto has_inputLoader = HasDependency(L"input_loader", inputLoader_version) == FoundWithCorrectVersion;
     auto has_archiveXL = HasDependency(L"ArchiveXL", archiveXL_version) == FoundWithCorrectVersion;
+    // Tweaks always go through TweakXL: the 2.5 built-in TweakDB loader can't create the new typed flats
+    // LTBF needs ({"$type", "$value"} on a new flat dereferences a failed type lookup and crashes)
     auto has_tweakXL = HasDependency(L"TweakXL", tweakXL_version) == FoundWithCorrectVersion;
+
+    // ArchiveXL when it is installed, otherwise the game's built-in mod loader (2.5+), which mounts the
+    // archive and reads let_there_be_flight.archive.json from the plugin folder
+    if (!has_archiveXL) {
+      builtInArchives =
+          GameModFolders::Register(aSdk, aHandle, Utils::GetRootDir() / "red4ext" / "plugins" / "let_there_be_flight");
+      has_archiveXL = builtInArchives;
+    }
+    spdlog::info("Archive loaded by {}", builtInArchives ? "the game's built-in mod loader" : "ArchiveXL");
     // optional, so just test for incorrect version
     auto has_modSettings = HasDependency(L"mod_settings", modSettings_version) != FoundWithIncorrectVersion;
 #endif
@@ -335,6 +370,9 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
                       has_modSettings ? L"" : L"* Mod Settings v" + std::to_wstring(modSettings_version) + L"+\n");
       MessageBoxW(nullptr, message.c_str(), L"Let There Be Flight requirements could not be found",
                   MB_SYSTEMMODAL | MB_ICONERROR);
+      if (builtInArchives) {
+        GameModFolders::Unregister(aSdk, aHandle);
+      }
       return false;
 #endif
     }
@@ -347,6 +385,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     // after every plugin's Main (at the game's InitScripts entry, before LoadScripts).
     spdlog::info("scripts: packed.reds and module.reds come from red4ext/plugins/let_there_be_flight/Scripts (offline cache build)");
     InputLoader::Add(aHandle, L"inputs.xml");
+    Navigation::NavMap::Get().Load(Utils::GetRootDir() / "red4ext" / "plugins" / "let_there_be_flight" / "navmap.bin");
     LtbfMac::SetPlugin(aSdk, aHandle);
     FlightModuleFactory::GetInstance().Load(aSdk, aHandle);
     spdlog::info("Main(Load) done: waiting for ltbf_registerNatives (types, tweaks, archive, audio, Codeware-shared hooks)");
@@ -358,7 +397,11 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     InputLoader::Add(aHandle, L"inputs.xml");
     TweakXL::RegisterTweak(aHandle, MOD_PACKED_NATIVE_TWEAKS_FILENAME);
     TweakXL::RegisterTweak(aHandle, MOD_PACKED_YAML_TWEAKS_FILENAME);
-    ArchiveXL::RegisterArchive(aHandle, "let_there_be_flight.archive");
+    if (!builtInArchives) {
+      ArchiveXL::RegisterArchive(aHandle, "let_there_be_flight.archive");
+    }
+
+    Navigation::NavMap::Get().Load(Utils::GetRootDir() / "red4ext" / "plugins" / "let_there_be_flight" / "navmap.bin");
 
     RED4ext::RTTIRegistrator::Add(RegisterTypes, PostRegisterTypes);
     Engine::RTTIRegistrar::RegisterPending();
@@ -367,7 +410,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     RED4ext::GameState initState;
     initState.OnEnter = nullptr;
     initState.OnUpdate = nullptr;
-    initState.OnExit = &FlightAudio::Load;
+    initState.OnExit = &OnInitializationExit;
 
     aSdk->gameStates->Add(aHandle, RED4ext::EGameStateType::Initialization, &initState);
 
@@ -395,6 +438,10 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
       // LTBF R41: no RED4ext Shutdown game state on macOS; FMOD is released here.
       if (LtbfMacAudioLoaded())
         FlightAudio::Unload(nullptr);
+#else
+      if (builtInArchives) {
+        GameModFolders::Unregister(aSdk, aHandle);
+      }
 #endif
     }
     spdlog::shutdown();

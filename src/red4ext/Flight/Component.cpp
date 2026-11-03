@@ -76,6 +76,42 @@ void FlightComponent::OnEnabled(bool enabled) {
   spdlog::info("FlightComponent {}", enabled);
 };
 
+// FlightSettings Bool read from the class defaults, which Mod Settings writes (same as the
+// flight HUD settings in Entity_InitializeComponents.cpp).
+static bool GetFlightSettingsBool(RED4ext::CRTTISystem *rtti, RED4ext::CName aProperty, bool aFallback) {
+  auto cls = rtti->GetClass("FlightSettings");
+  if (!cls) {
+    return aFallback;
+  }
+  auto variant = cls->defaults.Get(aProperty);
+  if (!variant || !*variant) {
+    return aFallback;
+  }
+  auto type = (*variant)->GetType();
+  if (!type || type->GetName() != RED4ext::CName("Bool")) {
+    return aFallback;
+  }
+  auto data = (*variant)->GetDataPtr();
+  return data ? *reinterpret_cast<bool *>(data) : aFallback;
+}
+
+static float GetFlightSettingsFloat(RED4ext::CRTTISystem *rtti, RED4ext::CName aProperty, float aFallback) {
+  auto cls = rtti->GetClass("FlightSettings");
+  if (!cls) {
+    return aFallback;
+  }
+  auto variant = cls->defaults.Get(aProperty);
+  if (!variant || !*variant) {
+    return aFallback;
+  }
+  auto type = (*variant)->GetType();
+  if (!type || type->GetName() != RED4ext::CName("Float")) {
+    return aFallback;
+  }
+  auto data = (*variant)->GetDataPtr();
+  return data ? *reinterpret_cast<float *>(data) : aFallback;
+}
+
 void FlightComponent::OnUpdate(float deltaTime) { 
 #ifdef __APPLE__
   static uint32_t s_macDiagUpdates = 0; // diagnostics only; shared by all components (the class layout is script-visible)
@@ -114,8 +150,22 @@ void FlightComponent::OnUpdate(float deltaTime) {
                    pd ? pd->velocity.Z : 0.f, pd ? pd->inverseMass : 0.f);
     }
 #endif
-    vehicle->physicsData->force += this->force.AsVector3();
-    vehicle->physicsData->torque += this->torque.AsVector3();
+#ifdef __APPLE__
+    // PushToPhysX, SyncFromPhysX and RigidBody_IntegrateMotion (Physics/ChassisContacts.cpp) have no macOS address rows yet, so
+    // those hooks are skipped and an impulse queued for PushToPhysX would never reach the body: the forces go to physicsData.
+    this->physxOwned = false;
+#else
+    this->physxOwned = this->active && GetFlightSettingsBool(rtti, "physxFlightPhysics", true);
+#endif
+    this->groundFriction = GetFlightSettingsFloat(rtti, "groundFriction", 0.1f);
+    if (this->physxOwned) {
+      // applied straight to the PhysX body in the PushToPhysX hook
+      this->pendingImpulse += this->force.AsVector3();
+      this->pendingAngularImpulse += this->torque.AsVector3();
+    } else {
+      vehicle->physicsData->force += this->force.AsVector3();
+      vehicle->physicsData->torque += this->torque.AsVector3();
+    }
     this->force = Vector4();
     this->torque = Vector4();
   }

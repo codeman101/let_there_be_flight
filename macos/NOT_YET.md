@@ -28,6 +28,10 @@ call and returns 0. A hook whose hash has no row is not attached (log line, feat
 | Input Loader | Not a plugin on macOS. `InputLoader::Add` is a logged no-op; the launcher's input loader installs `r6/input/ltbf-mac.xml` (the zip's `inputs.xml`). | Nothing in the plugin. |
 | FMOD Studio live update | Not enabled on macOS (it opens a TCP listener and macOS asks whether the game may accept connections). | Nothing. |
 | Cleanup of old Windows install files (`r6/scripts/let_there_be_flight`, `archive/pc/mod/let_there_be_flight.*`, ...) | Skipped: no Mac install put them there, and the plugin does not delete files in the game folder. | Nothing. |
+| PhysX flight physics and chassis contacts (`Physics/ChassisContacts.cpp`, Mod Settings "PhysX Flight Physics", "Ground Friction") | The hooks `SyncFromPhysX` (547299556), `RigidBody_IntegrateMotion` (2021199885) and `PushToPhysX` (3628605463) have no Mac rows, so they are skipped. `FlightComponent::OnUpdate` keeps `physxOwned` false on macOS, so the forces still go to `physicsData` (an impulse queued for `PushToPhysX` would never be applied). | The three addresses and their macOS signatures (the chassis and rigid-body layouts they read). |
+| Scrape audio and ground scratch effects (`Physics/ScrapeAudio.cpp`) | `NotifyContacts` (1399724886) and `FX_NotifyCollision` (3095401716) have no Mac rows; skipped. | The two addresses and the `vehicle::BaseObject` contact fields on macOS. |
+| The game's built-in mod loader instead of ArchiveXL (`GameModFolders.hpp`) | Windows only: it finds RED4ext's resolver through `GetModuleHandleW(L"RED4ext.dll")` and `GetProcAddress`, and hooks `GameModService` (3981123713, no Mac row). Not compiled on macOS; ArchiveXL mounts the archive from `archive/Mac/mod`. | The resolver export of the macOS loader and the 2.5 Mac address of the mod folder list. |
+| Autopilot routes (`Navigation/`) | Compiled and loaded like on Windows (`navmap.bin` from the plugin folder; without it the autopilot logs that navigation is off). Not tested on macOS. | An in-game test. |
 
 ## 3. Struct fields read or written through the fork's offsets, not checked against a macOS function
 
