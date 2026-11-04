@@ -27,20 +27,23 @@ using namespace RED4ext::vehicle;
 //  MaterialCondition rain;
 //};
 
-RTTI_DEFINE_CLASS(MaterialResource, {
+// Codeware 1.21's RTTI_DEFINE_CLASS names a RED4ext:: type by joining the namespaces, so
+// RED4ext::vehicle::MaterialResource would register as vehicleMaterialResource. The scripts
+// look up MaterialResource, MaterialCondition and MaterialFx.
+RTTI_DEFINE_CLASS(MaterialResource, "MaterialResource", {
   RTTI_PROPERTY(skidMarks);
   RTTI_PROPERTY(tireTracks);
   RTTI_PROPERTY(loaded);
   type->flags.hasNoDefaultObjectSerialization = true;
 });
 
-RTTI_DEFINE_CLASS(MaterialCondition, {
+RTTI_DEFINE_CLASS(MaterialCondition, "MaterialCondition", {
   RTTI_PROPERTY(particle);
   RTTI_PROPERTY(decal);
   type->flags.hasNoDefaultObjectSerialization = true;
 });
 
-RTTI_DEFINE_CLASS(MaterialFx, {
+RTTI_DEFINE_CLASS(MaterialFx, "MaterialFx", {
   RTTI_PROPERTY(normal);
   RTTI_PROPERTY(wet);
   RTTI_PROPERTY(rain);

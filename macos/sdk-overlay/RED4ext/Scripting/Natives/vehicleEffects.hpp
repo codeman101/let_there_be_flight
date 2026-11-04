@@ -13,11 +13,7 @@ namespace RED4ext::vehicle
 {
 
     
-// Codeware 1.21 names a RED4ext:: type that has no NAME by joining the namespaces
-// (RED4ext::vehicle::MaterialResource becomes vehicleMaterialResource). The scripts
-// ask for MaterialResource, MaterialCondition and MaterialFx.
 struct MaterialResource {
-    static constexpr const char* NAME = "MaterialResource";
     ResRef skidMarks;
     ResRef tireTracks;
     bool loaded;
@@ -25,13 +21,11 @@ struct MaterialResource {
 };
 
 struct MaterialCondition {
-    static constexpr const char* NAME = "MaterialCondition";
     MaterialResource particle;
     MaterialResource decal;
 };
 
 struct MaterialFx {
-    static constexpr const char* NAME = "MaterialFx";
     MaterialCondition normal;
     MaterialCondition wet;
     MaterialCondition rain;
